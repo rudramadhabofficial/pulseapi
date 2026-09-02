@@ -48,9 +48,9 @@ router.post('/', async (req: AuthRequest, res: Response): Promise<void> => {
 // Get endpoint details with health checks and incidents
 router.get('/:id', async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const id = req.params.id as string;
+    const endpointId = String(req.params.id);
     const endpoint = await prisma.endpoint.findFirst({
-      where: { id, userId: req.user!.userId },
+      where: { id: endpointId, userId: req.user!.userId },
       include: {
         healthChecks: {
           orderBy: { createdAt: 'desc' },
@@ -76,16 +76,16 @@ router.get('/:id', async (req: AuthRequest, res: Response): Promise<void> => {
 // Delete endpoint
 router.delete('/:id', async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const id = req.params.id as string;
+    const endpointId = String(req.params.id);
     const endpoint = await prisma.endpoint.findFirst({
-      where: { id, userId: req.user!.userId }
+      where: { id: endpointId, userId: req.user!.userId }
     });
     if (!endpoint) {
       res.status(404).json({ error: 'Endpoint not found' });
       return;
     }
 
-    await prisma.endpoint.delete({ where: { id } });
+    await prisma.endpoint.delete({ where: { id: endpointId } });
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete endpoint' });
