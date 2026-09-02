@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String     @id @default(uuid())
+  email        String     @unique
+  passwordHash String
+  createdAt    DateTime   @default(now())
+  endpoints    Endpoint[]
+}
+
+model Endpoint {
+  id             String        @id @default(uuid())
+  userId         String
+  user           User          @relation(fields: [userId], references: [id])
+  name           String
+  url            String
+  method         String        @default("GET")
+  expectedStatus Int           @default(200)
+  timeoutMs      Int           @default(5000)
+  status         String        @default("HEALTHY") // HEALTHY, DEGRADED, DOWN
+  createdAt      DateTime      @default(now())
+  healthChecks   HealthCheck[]
+  incidents      Incident[]
+}
+
+model HealthCheck {
+  id             String   @id @default(uuid())
+  endpointId     String
+  endpoint       Endpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
+  statusCode     Int?
+  responseTimeMs Int?
+  success        Boolean
+  createdAt      DateTime @default(now())
+
+  @@index([endpointId, createdAt])
+}
+
+model Incident {
+  id         String    @id @default(uuid())
+  endpointId String
+  endpoint   Endpoint  @relation(fields: [endpointId], references: [id], onDelete: Cascade)
+  status     String    @default("OPEN") // OPEN, RESOLVED
+  startedAt  DateTime  @default(now())
+  resolvedAt DateTime?
+}

@@ -1,0 +1,36 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies (Backend)
+        run: cd backend && npm ci
+
+      - name: Install dependencies (Worker)
+        run: cd worker && npm ci
+
+      - name: Install dependencies (Frontend)
+        run: cd frontend && npm ci
+
+      - name: Build Backend
+        run: cd backend && npx prisma generate && npm run build
+
+      - name: Build Worker
+        run: cd worker && npm run build
+
+      - name: Build Frontend
+        run: cd frontend && npm run build
