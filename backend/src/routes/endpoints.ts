@@ -48,7 +48,7 @@ router.post('/', async (req: AuthRequest, res: Response): Promise<void> => {
 // Get endpoint details with health checks and incidents
 router.get('/:id', async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const endpoint = await prisma.endpoint.findFirst({
       where: { id, userId: req.user!.userId },
       include: {
@@ -76,7 +76,7 @@ router.get('/:id', async (req: AuthRequest, res: Response): Promise<void> => {
 // Delete endpoint
 router.delete('/:id', async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const endpoint = await prisma.endpoint.findFirst({
       where: { id, userId: req.user!.userId }
     });
