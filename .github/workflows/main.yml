@@ -15,16 +15,16 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '22'
 
       - name: Install dependencies (Backend)
-        run: cd backend && npm ci
+        run: cd backend && npm install
 
       - name: Install dependencies (Worker)
-        run: cd worker && npm ci
+        run: cd worker && npm install
 
       - name: Install dependencies (Frontend)
-        run: cd frontend && npm ci
+        run: cd frontend && npm install
 
       - name: Build Backend
         run: cd backend && npx prisma generate && npm run build
